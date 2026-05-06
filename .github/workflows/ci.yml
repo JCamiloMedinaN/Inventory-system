@@ -1,0 +1,33 @@
+name: CI - Backend Validation
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: |
+          cd backend
+          npm install
+
+      - name: Ejecutar Validaciones de Código (Linter)
+        run: |
+          cd backend
+          npm run lint
+
+      - name: Ejecutar Pruebas Automáticas
+        run: |
+          cd backend
+          npm test

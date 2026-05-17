@@ -1,0 +1,116 @@
+paths:
+  /users:
+    get:
+      summary: Obtener usuarios paginados
+      tags: [Users]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: rowsPerPage
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Lista paginada de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsers'
+
+    post:
+      summary: Crear un usuario
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        201:
+          description: Usuario creado correctamente
+
+  /users/{id}:
+    get:
+      summary: Obtener usuario por ID
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Usuario no encontrado
+
+components:
+  schemas:
+    PaginatedUsers:
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            total:
+              type: integer
+            page:
+              type: integer
+            rowsPerPage:
+              type: integer
+            totalPages:
+              type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isTemporaryPass:
+          type: boolean
+        isActive:
+          type: boolean
+        createdBy:
+          type: string
+          nullable: true
+        updatedBy:
+          type: string
+          nullable: true
+    CreateUser:
+      type: object
+      required:
+        - email
+        - username
+        - role
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+          enum: [SUPERADMIN, INVENTORY_MANAGER, AUDITOR]

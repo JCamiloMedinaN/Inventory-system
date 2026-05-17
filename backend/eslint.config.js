@@ -12,7 +12,7 @@ export default tseslint.config(
         },
         rules: {
             'prettier/prettier': 'error',
-            'no-console': 'warn',
+            'no-console': ['warn', { allow: ['info', 'error'] }],
             'no-debugger': 'error',
             '@typescript-eslint/explicit-function-return-type': 'warn',
             '@typescript-eslint/no-explicit-any': 'error',
@@ -36,6 +36,10 @@ export default tseslint.config(
     },
     prettierConfig,
     {
-        ignores: ['dist/**', 'node_modules/**', 'prisma/**', 'eslint.config.js'],
-    }
+        ignores: ['dist/**',
+            'node_modules/**',
+            'prisma/**',
+            'src/generated/**',
+            'eslint.config.js'],
+    },
 );

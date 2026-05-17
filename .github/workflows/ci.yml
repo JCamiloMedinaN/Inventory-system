@@ -5,9 +5,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  validate:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
@@ -15,19 +14,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24.15'
+          cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
 
       - name: Instalar dependencias
-        run: |
-          cd backend
-          npm install
+        run: npm ci
+        working-directory: ./backend
 
-      - name: Ejecutar Validaciones de Código (Linter)
-        run: |
-          cd backend
-          npm run lint
+      - name: Auditoría de Seguridad
+        run: npm audit --audit-level=high
+        working-directory: ./backend
 
-      - name: Ejecutar Pruebas Automáticas
-        run: |
-          cd backend
-          npm test
+      - name: Verificar Tipado (TS)
+        run: npx tsc --noEmit
+        working-directory: ./backend
+
+      - name: Linter (Validación de reglas y 'any')
+        run: npm run lint
+        working-directory: ./backend
+
+      - name: Ejecutar Pruebas
+        run: npm test
+        working-directory: ./backend

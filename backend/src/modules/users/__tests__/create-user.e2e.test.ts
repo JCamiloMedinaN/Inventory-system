@@ -26,6 +26,7 @@ describe('POST /api/users', () => {
   it('debe crear un usuario nuevo', async () => {
     const response = await request(app).post('/api/users').send({
       email: 'test.user@ecotech.com',
+      username: 'Test User',
       role: 'INVENTORY_MANAGER',
     });
     expect(response.status).toBe(201);
@@ -35,10 +36,12 @@ describe('POST /api/users', () => {
   it('debe rechazar usuario duplicado', async () => {
     await request(app).post('/api/users').send({
       email: 'test.user@ecotech.com',
+      username: 'Test User',
       role: 'INVENTORY_MANAGER',
     });
     const response = await request(app).post('/api/users').send({
       email: 'test.user@ecotech.com',
+      username: 'Test User',
       role: 'INVENTORY_MANAGER',
     });
     expect(response.status).toBe(409);

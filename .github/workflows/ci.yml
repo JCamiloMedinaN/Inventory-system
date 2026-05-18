@@ -44,3 +44,7 @@ jobs:
       - name: Ejecutar Pruebas
         run: npm test
         working-directory: ./backend
+        env:
+          PORT: 3000
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          NODE_ENV: test

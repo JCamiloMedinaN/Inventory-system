@@ -26,6 +26,10 @@ jobs:
         run: npm audit --audit-level=high
         working-directory: ./backend
 
+      - name: Generar Cliente Prisma
+        run: npx prisma generate
+        working-directory: ./backend
+        
       - name: Verificar Tipado (TS)
         run: npx tsc --noEmit
         working-directory: ./backend

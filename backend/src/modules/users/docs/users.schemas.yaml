@@ -1,0 +1,57 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        isTemporaryPass:
+          type: boolean
+        isActive:
+          type: boolean
+        createdBy:
+          type: string
+          nullable: true
+        updatedBy:
+          type: string
+          nullable: true
+
+    CreateUser:
+      type: object
+      required:
+        - email
+        - username
+        - role
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+          enum: [SUPERADMIN, INVENTORY_MANAGER, AUDITOR]
+
+    PaginatedUsers:
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            total:
+              type: integer
+            page:
+              type: integer
+            rowsPerPage:
+              type: integer
+            totalPages:
+              type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'

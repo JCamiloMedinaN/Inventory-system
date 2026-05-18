@@ -18,12 +18,12 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "types": [
-      "node"
-    ],
+      "node",
+      "jest"
+    ]
   },
   "include": [
-    "src/**/*"
-  ],
+    "src/**/*", "src/__mocks__/nodemailer.ts"  ],
   "exclude": [
     "node_modules",
     "dist"

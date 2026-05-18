@@ -5,9 +5,25 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  validate:
     runs-on: ubuntu-latest
-    
+
+    # Configuración de la base de datos real para pruebas
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: inventory_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
@@ -15,19 +31,43 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24.15'
+          cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
 
       - name: Instalar dependencias
-        run: |
-          cd backend
-          npm install
+        run: npm ci
+        working-directory: ./backend
 
-      - name: Ejecutar Validaciones de Código (Linter)
-        run: |
-          cd backend
-          npm run lint
+      - name: Auditoría de Seguridad
+        run: npm audit --audit-level=high
+        working-directory: ./backend
 
-      - name: Ejecutar Pruebas Automáticas
-        run: |
-          cd backend
-          npm test
+      - name: Generar Cliente Prisma
+        run: npx prisma generate
+        working-directory: ./backend
+        env:
+          DATABASE_URL: "postgresql://user:password@localhost:5432/inventory_test"
+
+      # PASO CLAVE: Crear las tablas en la base de datos de prueba
+      - name: Migrar Base de Datos de Test
+        run: npx prisma db push
+        working-directory: ./backend
+        env:
+          DATABASE_URL: "postgresql://user:password@localhost:5432/inventory_test"
+        
+      - name: Verificar Tipado (TS)
+        run: npx tsc --noEmit
+        working-directory: ./backend
+
+      - name: Linter (Validación de reglas y 'any')
+        run: npm run lint
+        working-directory: ./backend
+
+      - name: Ejecutar Pruebas
+        run: npm test
+        working-directory: ./backend
+        env:
+          PORT: 3000
+          DATABASE_URL: "postgresql://user:password@localhost:5432/inventory_test"
+          NODE_ENV: test

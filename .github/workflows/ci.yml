@@ -29,6 +29,9 @@ jobs:
       - name: Generar Cliente Prisma
         run: npx prisma generate
         working-directory: ./backend
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+
         
       - name: Verificar Tipado (TS)
         run: npx tsc --noEmit
